@@ -13,7 +13,7 @@ pipeline {
     stage('Deploy App') {
       steps {
         script {
-          kubernetesDeploy(configs: "mendix-test3.yml", kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "mendix-secret3.yml","mendix-test3.yml", kubeconfigId: "mykubeconfig")
         }
       }
     }
