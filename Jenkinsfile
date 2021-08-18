@@ -13,7 +13,7 @@ pipeline {
     stage('Deploy App') {
       steps {
         script {          
-          kubernetesDeploy(kubeconfigId: "mykubeconfig")
+          kubernetesDeploy(configs: "nginx.yaml", kubeconfigId: "mykubeconfig")
           sh 'kubectl apply -f mendix-secret4.yml'
           sh 'kubectl apply -f mendix-test4.yml'
         }
