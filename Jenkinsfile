@@ -14,8 +14,8 @@ pipeline {
       steps {
         script {          
            withKubeConfig(kubeconfigId: "mykubeconfig")
-          sh ''kubectl apply -f mendix-secret4.yaml'
-          sh ''kubectl apply -f mendix-test4.yaml'
+          sh ''kubectl apply -f mendix-secret4.yml'
+          sh ''kubectl apply -f mendix-test4.yml'
         }
       }
     }
