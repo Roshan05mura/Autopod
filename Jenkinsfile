@@ -1,0 +1,25 @@
+pipeline {
+
+  agent { label 'kubepod' }
+
+  stages {
+
+    stage('Checkout Source') {
+      steps {
+        git url:'https://github.com/Roshan05mura/Autopod.git', branch:'test-deploy-stage'
+      }
+    }
+
+    stage('Deploy App') {
+      steps {
+        script {          
+           withKubeConfig([kubeconfigId: "mykubeconfig", serverUrl: 'https://api.k8s.my-company.com'])
+          sh ''kubectl apply -f mendix-secret4.yaml'
+          sh ''kubectl apply -f mendix-test4.yaml'
+        }
+      }
+    }
+
+  }
+
+}
