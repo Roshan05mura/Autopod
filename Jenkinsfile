@@ -12,14 +12,8 @@ pipeline {
 
     stage('Deploy App') {
       steps {
-        script {
+        script {          
           kubernetesDeploy(configs: "mendix-secret4.yml", kubeconfigId: "mykubeconfig")
-        }
-      }
-    }
-    stage('Deploy App1') {
-      steps {
-        script {
           kubernetesDeploy(configs: "mendix-test4.yml", kubeconfigId: "mykubeconfig")
         }
       }
