@@ -12,7 +12,7 @@ agent any
                 try{
                    sh "ssh ubuntu@18.140.237.241 kubectl apply -f ."
                    }catch(error){
-                       sh "ubuntu@18.140.237.241 kubectl apply -f ."
+                       sh "ssh ubuntu@18.140.237.241 kubectl apply -f ."
                    }
                   }
            }
