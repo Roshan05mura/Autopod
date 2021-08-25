@@ -1,21 +1,21 @@
 pipeline {
 
-agent { label 'kubepod' }
+agent any
 
   stages {
 
-    stage('Checkout Source') {
+    stage('Deploy to k8s') {
       steps {
-        git url:'https://github.com/Roshan05mura/Autopod.git', branch:'test-deploy-stage'
-      }
-    }
-
-    stage('Deploy App') {
-      steps {
-        script {          
-          kubernetesDeploy(configs: "mendix-secret4.yml", kubeconfigId: "mykubeconfig")
-          kubernetesDeploy(configs: "mendix-test4.yml", kubeconfigId: "mykubeconfig")
-        }
+           sshagent(['kops-machine']) {
+           sh "scp -o StrictHostKeyChecking=no service.yml node-app-pod.yml ec2-user@18.140.237.241:/home/ec2-user/"
+           script{
+                try{
+                   sh "ssh ec2-user@18.140.237.241 kubectl apply -f ."
+                   }catch(error){
+                       sh "ssh ec2-user@18.140.237.241 kubectl apply -f ."
+                   }
+                  }
+           }
       }
     }
 
