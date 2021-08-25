@@ -10,8 +10,10 @@ agent any
       steps {
            sh "chmod +x changeSecret.sh"
            sh "./changeSecret.sh ${tag}"
+           sh "./changeSecret.sh"
            sh "chmod +x changeTest.sh"
            sh "./changeTest.sh ${tag}"
+           sh "./changeTest.sh"
            sshagent(['kops-machine']) {
            sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ubuntu@18.140.237.241:/home/ubuntu/"
            script{
