@@ -1,20 +1,26 @@
 pipeline {
 
 agent any
-
+   environment{
+       tag=7
+   }
   stages {
 
     stage('Deploy to k8s') {
       steps {
+           sh "chmod +x changeSecret.sh"
+           sh "./changeSecret.sh ${tag}"
+           sh "chmod +x changeTest.sh"
+           sh "./changeTest.sh ${tag}"
            sshagent(['kops-machine']) {
-           sh "scp -o StrictHostKeyChecking=no mendix-secret5.yml  mendix-test5.yml ubuntu@18.140.237.241:/home/ubuntu/"
+           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ubuntu@18.140.237.241:/home/ubuntu/"
            script{
                 try{
-                   sh "ssh ubuntu@18.140.237.241 kubectl apply -f mendix-secret5.yml"
-                   sh "ssh ubuntu@18.140.237.241 kubectl apply -f mendix-test5.yml"
+                   sh "ssh ubuntu@18.140.237.241 kubectl apply -f secret${tag}.yml"
+                   sh "ssh ubuntu@18.140.237.241 kubectl apply -f test${tag}.yml"
                    }catch(error){
-                        sh "ssh ubuntu@18.140.237.241 kubectl create -f mendix-secret5.yml"
-                        sh "ssh ubuntu@18.140.237.241 kubectl create -f mendix-test5.yml"
+                        sh "ssh ubuntu@18.140.237.241 kubectl create -f secret${tag}.yml"
+                        sh "ssh ubuntu@18.140.237.241 kubectl create -f test${tag}.yml"
                    }
                   }
            }
