@@ -4,6 +4,6 @@ sed -i 's/dm-app/ab-app/gI' test6.yml
 sed -i 's/dm-app-service/ab-app-service/gI' test6.yml
 sed -i 's/dm-k8s-stateful/ab-k8s-stateful/gI' test6.yml
 sed -i 's/dm-app-secrets/ab-app-secrets/gI' test6.yml
-sed -i 's/msql/new-text/gI' test6.yml
+sed -i 's/msql/AWSRDS4/gI' test6.yml
 
 
