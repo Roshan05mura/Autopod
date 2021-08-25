@@ -10,13 +10,6 @@ metadata:
 
 spec:
   rules:
-  - host: '*.rapidgrant.net'
-    http:
-      paths:
-      - backend:
-          serviceName: mendix-app-service
-          servicePort: 8080
-        path: /
   - host: dm.rapidgrant.net
     http:
       paths:
@@ -24,19 +17,6 @@ spec:
           serviceName: dm-app-service
           servicePort: 8081
         path: /
----
-# hello-kubernetes.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: mendix-app-service
-spec:
-  type: ClusterIP
-  ports:
-  - port: 8080
-    targetPort: 8080
-  selector:
-    app: mendix-k8s
 ---
 # hello-kubernetes.yaml
 apiVersion: v1
@@ -50,88 +30,6 @@ spec:
     targetPort: 8081
   selector:
     app: dm-k8s
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: mendix-k8s-stateful
-  labels:
-    app: mendix-k8s
-spec:
-  serviceName: mendix-app-service
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mendix-k8s
-  template:
-    metadata:
-      labels:
-        app: mendix-k8s
-    spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - mendix-k8s
-            topologyKey: kubernetes.io/hostname 
-
-      containers:
-        - name: mendix-app
-          image: reg.mendix.io/library/mendix-app:10
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-          volumeMounts:
-            - mountPath: "/build/data/files"
-              name: mendix-data
-          env:
-            - name: ADMIN_PASSWORD
-              value: 'Adawnonjunk@123'
-            - name: ADMIN_USER
-              value: 'MxAdmin'
-
-              # valueFrom:
-              #   secretKeyRef:
-              #     name: mendix-app-secrets
-              #     key: admin-password
-            - name: DATABASE_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  name: mendix-app-secrets
-                  key: db-endpoint
-            - name: LICENSE_ID
-              valueFrom:
-                secretKeyRef:
-                  name: mendix-app-secrets
-                  key: license-id
-            - name: LICENSE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: mendix-app-secrets
-                  key: license-key
-            - name: MXRUNTIME_DatabaseType
-              value: "mysql"
-            - name: MXRUNTIME_DatabaseUserName
-              value: "admin"
-            - name: MXRUNTIME_DatabasePassword
-              value: "password123"
-            - name: MXRUNTIME_DatabaseName
-              value: "sys"   
-            - name: MXRUNTIME_DatabaseJdbcUrl
-              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/sys?user=admin&password=password123" 
-            - name: LOGGING_CONFIG
-              value: '{"Core": "DEBUG"}'                                                  
-      imagePullSecrets:
-        - name: regcred            
-      volumes:
-        - hostPath:
-            path: "/home/docker/mendix-files"
-          name: mendix-data
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
