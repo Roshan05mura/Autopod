@@ -10,11 +10,11 @@ metadata:
 
 spec:
   rules:
-  - host: dm.rapidgrant.net
+  - host: dm${BUILD_NUMBER}.rapidgrant.net
     http:
       paths:
       - backend:
-          serviceName: dm-app-service
+          serviceName: dm${BUILD_NUMBER}-app-service
           servicePort: 8081
         path: /
 ---
@@ -22,52 +22,52 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dm-app-service
+  name: dm${BUILD_NUMBER}-app-service
 spec:
   type: ClusterIP
   ports:
   - port: 8081
     targetPort: 8081
   selector:
-    app: dm-k8s
+    app: dm${BUILD_NUMBER}-k8s
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dm-k8s-stateful
+  name: dm${BUILD_NUMBER}-k8s-stateful
   labels:
-    app: dm-k8s
+    app: dm${BUILD_NUMBER}-k8s
 spec:
-  serviceName: dm-app-service
+  serviceName: dm${BUILD_NUMBER}-app-service
   replicas: 1
   selector:
     matchLabels:
-      app: dm-k8s
+      app: dm${BUILD_NUMBER}-k8s
   template:
     metadata:
       labels:
-        app: dm-k8s
+        app: dm${BUILD_NUMBER}-k8s
     spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: dm
+              - key: dm${BUILD_NUMBER}
                 operator: In
                 values:
-                - dm-k8s
+                - dm${BUILD_NUMBER}-k8s
             topologyKey: kubernetes.io/hostname 
 
       containers:
-        - name: dm-app
+        - name: dm${BUILD_NUMBER}-app
           image: reg.mendix.io/library/mendix-app:10
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
           volumeMounts:
             - mountPath: "/build/data/files"
-              name: dm-data
+              name: dm${BUILD_NUMBER}-data
           env:
             - name: ADMIN_PASSWORD
               value: 'Adawnonjunk@123'
@@ -76,17 +76,17 @@ spec:
             - name: DATABASE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: dm-app-secrets
-                  key: db-endpoint
+                  name: dm${BUILD_NUMBER}-app-secrets
+                  key: dm${BUILD_NUMBER}-endpoint
             - name: LICENSE_ID
               valueFrom:
                 secretKeyRef:
-                  name: dm-app-secrets
+                  name: dm${BUILD_NUMBER}-app-secrets
                   key: license-id
             - name: LICENSE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: dm-app-secrets
+                  name: dm${BUILD_NUMBER}-app-secrets
                   key: license-key
             - name: MXRUNTIME_DatabaseType
               value: "mysql"
@@ -95,9 +95,9 @@ spec:
             - name: MXRUNTIME_DatabasePassword
               value: "password123"
             - name: MXRUNTIME_DatabaseName
-              value: "msql"   
+              value: "dm${BUILD_NUMBER}"   
             - name: MXRUNTIME_DatabaseJdbcUrl
-              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/msql?user=admin&password=password123" 
+              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/dm${BUILD_NUMBER}?user=admin&password=password123" 
             - name: LOGGING_CONFIG
               value: '{"Core": "DEBUG"}'                                                  
       imagePullSecrets:
@@ -105,7 +105,7 @@ spec:
       volumes:
         - hostPath:
             path: "/home/docker/mendix-files"
-          name: dm-data
+          name: dm${BUILD_NUMBER}-data
 
 
 
