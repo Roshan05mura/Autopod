@@ -8,6 +8,6 @@ sed -i "s/dm-endpoint/ab-endpoint/gI" test7.yml
 sed -i "s/dm-app-service/ab-app-service/gI" test7.yml
 sed -i "s/dm-k8s-stateful/ab-k8s-stateful/gI" test7.yml
 sed -i "s/dm-app-secrets/ab-app-secrets/gI" test7.yml
-sed -i "s/msql/AWSRDS4/gI" test7.yml
+sed -i "s/msql/msql/gI" test7.yml
 
 
