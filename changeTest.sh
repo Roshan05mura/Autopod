@@ -3,7 +3,6 @@ cat test6.yml > test7.yml
 sed -i "s/dm.rapidgrant.net/ab.rapidgrant.net/g" test7.yml
 sed -i "s/dm-k8s/ab-k8s/gI" test7.yml
 sed -i "s/dm-app/ab-app/gI" test7.yml
-sed -i "s/dm/ab/g" test7.yml
 sed -i "s/dm-data/ab-data/gI" test7.yml
 sed -i "s/dm-endpoint/ab-endpoint/gI" test7.yml
 sed -i "s/dm-app-service/ab-app-service/gI" test7.yml
