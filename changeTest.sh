@@ -1,3 +1,4 @@
+#!/bin/bash
 sed -i "s/dm.rapidgrant.net/ab.rapidgrant.net/g" test6.yml > test${1}.yml
 sed -i "s/dm-k8s/ab-k8s/gI" test6.yml > test${1}.yml
 sed -i "s/dm-app/ab-app/gI" test6.yml > test${1}.yml
