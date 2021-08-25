@@ -1,0 +1,130 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: mendix-module
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+
+spec:
+  rules:
+  - host: dm${BUILD_NUMBER}.rapidgrant.net
+    http:
+      paths:
+      - backend:
+          serviceName: dm${BUILD_NUMBER}-app-service
+          servicePort: 8081
+        path: /
+---
+# hello-kubernetes.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm${BUILD_NUMBER}-app-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8081
+    targetPort: 8081
+  selector:
+    app: dm${BUILD_NUMBER}-k8s
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dm${BUILD_NUMBER}-k8s-stateful
+  labels:
+    app: dm${BUILD_NUMBER}-k8s
+spec:
+  serviceName: dm${BUILD_NUMBER}-app-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm${BUILD_NUMBER}-k8s
+  template:
+    metadata:
+      labels:
+        app: dm${BUILD_NUMBER}-k8s
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: dm${BUILD_NUMBER}
+                operator: In
+                values:
+                - dm${BUILD_NUMBER}-k8s
+            topologyKey: kubernetes.io/hostname 
+
+      containers:
+        - name: dm${BUILD_NUMBER}-app
+          image: reg.mendix.io/library/mendix-app:10
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - mountPath: "/build/data/files"
+              name: dm${BUILD_NUMBER}-data
+          env:
+            - name: ADMIN_PASSWORD
+              value: 'Adawnonjunk@123'
+            - name: ADMIN_USER
+              value: 'MxAdmin'
+            - name: DATABASE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: dm${BUILD_NUMBER}-app-secrets
+                  key: dm${BUILD_NUMBER}-endpoint
+            - name: LICENSE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dm${BUILD_NUMBER}-app-secrets
+                  key: license-id
+            - name: LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dm${BUILD_NUMBER}-app-secrets
+                  key: license-key
+            - name: MXRUNTIME_DatabaseType
+              value: "mysql"
+            - name: MXRUNTIME_DatabaseUserName
+              value: "admin"
+            - name: MXRUNTIME_DatabasePassword
+              value: "password123"
+            - name: MXRUNTIME_DatabaseName
+              value: "dm${BUILD_NUMBER}"   
+            - name: MXRUNTIME_DatabaseJdbcUrl
+              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/dm${BUILD_NUMBER}?user=admin&password=password123" 
+            - name: LOGGING_CONFIG
+              value: '{"Core": "DEBUG"}'                                                  
+      imagePullSecrets:
+        - name: regcred            
+      volumes:
+        - hostPath:
+            path: "/home/docker/mendix-files"
+          name: dm${BUILD_NUMBER}-data
+
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: hello-kubernetes
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: hello-kubernetes
+#   template:
+#     metadata:
+#       labels:
+#         app: hello-kubernetes
+#     spec:
+#       containers:
+#       - name: hello-kubernetes
+#         image: paulbouwer/hello-kubernetes:1.8
+#         ports:
+#         - containerPort: 8080
