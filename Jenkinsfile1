@@ -7,12 +7,12 @@ agent any
     stage('Deploy to k8s') {
       steps {
            sshagent(['kops-machine']) {
-           sh "scp -o StrictHostKeyChecking=no mendix-secret3.yml  mendix-test3.yml ec2-user@18.140.237.241:/home/ubuntu/Autopod"
+           sh "scp -o StrictHostKeyChecking=no mendix-secret3.yml  mendix-test3.yml ubuntu@ec2-18-140-237-241:/home/ubuntu/Autopod"
            script{
                 try{
-                   sh "ssh ec2-user@18.140.237.241 kubectl apply -f ."
+                   sh "ssh ubuntu@ec2-18-140-237-241 kubectl apply -f ."
                    }catch(error){
-                       sh "ssh ec2-user@18.140.237.241 kubectl apply -f ."
+                       sh "ubuntu@ec2-18-140-237-241 kubectl apply -f ."
                    }
                   }
            }
