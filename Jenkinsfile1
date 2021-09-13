@@ -13,14 +13,14 @@ agent any
            sh "chmod +x changeTest.sh"
            sh "./changeTest.sh"
            sshagent(['kops-machine']) {
-           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ubuntu@13.214.43.201:/home/ubuntu/"
+           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@13.214.43.201:/home/ubuntu/"
            script{
                 try{
-                   sh "ssh ubuntu@13.214.43.201 kubectl apply -f secret${tag}.yml"
-                   sh "ssh ubuntu@13.214.43.201 kubectl apply -f test${tag}.yml"
+                   sh "ssh ec2-user@13.214.43.201 kubectl apply -f secret${tag}.yml"
+                   sh "ssh ec2-user@13.214.43.201 kubectl apply -f test${tag}.yml"
                    }catch(error){
-                        sh "ssh ubuntu@13.214.43.201 kubectl create -f secret${tag}.yml"
-                        sh "ssh ubuntu@13.214.43.201 kubectl create -f test${tag}.yml"
+                        sh "ssh ec2-user@13.214.43.201 kubectl create -f secret${tag}.yml"
+                        sh "ssh ec2-user@13.214.43.201 kubectl create -f test${tag}.yml"
                    }
                   }
            }
