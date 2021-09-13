@@ -9,16 +9,12 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
 
 spec:
-  tls:
-  - hosts:
-    - dm.rapidgrant.net
-    secretName: app.mendix.io
   rules:
   - host: dm.rapidgrant.net
     http:
       paths:
       - backend:
-          serviceName: mendix-app-service
+          serviceName: dm-app-service
           servicePort: 8080
         path: /
 ---
@@ -26,31 +22,31 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mendix-app-service
+  name: dm-app-service
 spec:
   type: ClusterIP
   ports:
   - port: 8080
     targetPort: 8080
   selector:
-    app: mendix-k8s
+    app: dm-k8s
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mendix-k8s-stateful
+  name: dm-k8s-stateful
   labels:
-    app: mendix-k8s
+    app: dm-k8s
 spec:
-  serviceName: mendix-app-service
+  serviceName: dm-app-service
   replicas: 1
   selector:
     matchLabels:
-      app: mendix-k8s
+      app: dm-k8s
   template:
     metadata:
       labels:
-        app: mendix-k8s
+        app: dm-k8s
     spec:
       affinity:
         podAntiAffinity:
@@ -60,18 +56,18 @@ spec:
               - key: app
                 operator: In
                 values:
-                - mendix-k8s
+                - dm-k8s
             topologyKey: kubernetes.io/hostname 
 
       containers:
-        - name: mendix-app
+        - name: dm-app
           image: roshanmura23/rapidgrant_mendix-app
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           volumeMounts:
             - mountPath: "/build/data/files"
-              name: mendix-data
+              name: dm-data
           env:
             - name: ADMIN_PASSWORD
               value: 'Adawnonjunk@123'
@@ -85,17 +81,17 @@ spec:
             - name: DATABASE_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  name: mendix-app-secrets
+                  name: dm-app-secrets
                   key: db-endpoint
             - name: LICENSE_ID
               valueFrom:
                 secretKeyRef:
-                  name: mendix-app-secrets
+                  name: dm-app-secrets
                   key: license-id
             - name: LICENSE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: mendix-app-secrets
+                  name: dm-app-secrets
                   key: license-key
             - name: MXRUNTIME_DatabaseType
               value: "mysql"
@@ -104,9 +100,9 @@ spec:
             - name: MXRUNTIME_DatabasePassword
               value: "password123"
             - name: MXRUNTIME_DatabaseName
-              value: "AWSRDS4"   
+              value: "AWSRDS5"   
             - name: MXRUNTIME_DatabaseJdbcUrl
-              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/AWSRDS4?user=admin&password=password123" 
+              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/AWSRDS5?user=admin&password=password123" 
             - name: LOGGING_CONFIG
               value: '{"Core": "DEBUG"}'                                                  
       imagePullSecrets:
