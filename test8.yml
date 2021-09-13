@@ -110,7 +110,7 @@ spec:
       volumes:
         - hostPath:
             path: "/home/docker/mendix-files"
-          name: mendix-data
+          name: dm-data
 
 
 # apiVersion: apps/v1
