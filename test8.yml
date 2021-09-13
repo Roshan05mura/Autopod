@@ -100,9 +100,9 @@ spec:
             - name: MXRUNTIME_DatabasePassword
               value: "password123"
             - name: MXRUNTIME_DatabaseName
-              value: "AWSRDS5"   
+              value: "AWSRDS4"   
             - name: MXRUNTIME_DatabaseJdbcUrl
-              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/AWSRDS5?user=admin&password=password123" 
+              value: "jdbc:mysql://t2.cbpfmwyab7ft.ap-southeast-1.rds.amazonaws.com:3306/AWSRDS4?user=admin&password=password123" 
             - name: LOGGING_CONFIG
               value: '{"Core": "DEBUG"}'                                                  
       imagePullSecrets:
