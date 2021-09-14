@@ -1,0 +1,33 @@
+pipeline {
+
+agent any
+   environment{
+       tag=8
+   }
+  stages {
+
+    stage('Deploy to k8s') {
+      steps {
+           sh "chmod +x changeSecret.sh"
+           sh "./changeSecret.sh"
+           sh "chmod +x changeTest.sh"
+           sh "./changeTest.sh"
+           sshagent(['kops-machine']) {
+           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@13.214.43.201:/home/ubuntu/"
+           script{
+                try{
+                   curl -LO https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
+                   sh "ssh ec2-user@13.214.43.201 kubectl apply -f secret${tag}.yml"
+                   sh "ssh ec2-user@13.214.43.201 kubectl apply -f test${tag}.yml"
+                   }catch(error){
+                        sh "ssh ec2-user@13.214.43.201 kubectl create -f secret${tag}.yml"
+                        sh "ssh ec2-user@13.214.43.201 kubectl create -f test${tag}.yml"
+                   }
+                  }
+           }
+      }
+    }
+
+  }
+
+}
