@@ -12,15 +12,13 @@ agent any
            sh "./changeSecret.sh"
            sh "chmod +x changeTest.sh"
            sh "./changeTest.sh"
-           sshagent(['EKS-cluster']) {
-           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@3.141.197.212:/home/ec2-user/"
            script{
                 try{
-                   sh "ssh ec2-user@3.141.197.212 kubectl apply -f secret${tag}.yml"
-                   sh "ssh ec2-user@3.141.197.212 kubectl apply -f test${tag}.yml"
+                   sh "kubectl apply -f secret${tag}.yml"
+                   sh "kubectl apply -f test${tag}.yml"
                    }catch(error){
-                        sh "ssh ec2-user@3.141.197.212 kubectl create -f secret${tag}.yml"
-                        sh "ssh ec2-user@3.141.197.212 kubectl create -f test${tag}.yml"
+                        sh "kubectl create -f secret${tag}.yml"
+                        sh "kubectl create -f test${tag}.yml"
                    }
                   }
            }
