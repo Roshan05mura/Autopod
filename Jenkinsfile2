@@ -13,7 +13,7 @@ agent any
            sh "chmod +x changeTest.sh"
            sh "./changeTest.sh"
            sshagent(['EKS-cluster']) {
-           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@3.141.197.212:/home/ubuntu/"
+           sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@3.141.197.212:/home/ec2-user/"
            script{
                 try{
                    sh "wget -N https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl"
