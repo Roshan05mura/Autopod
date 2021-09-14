@@ -16,7 +16,6 @@ agent any
            sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@3.141.197.212:/home/ec2-user/"
            script{
                 try{
-                   sh "wget -N https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl"
                    sh "ssh ec2-user@3.141.197.212 kubectl apply -f secret${tag}.yml"
                    sh "ssh ec2-user@3.141.197.212 kubectl apply -f test${tag}.yml"
                    }catch(error){
