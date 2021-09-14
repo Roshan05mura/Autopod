@@ -12,7 +12,7 @@ agent any
            sh "./changeSecret.sh"
            sh "chmod +x changeTest.sh"
            sh "./changeTest.sh"
-           sshagent(['kops-machine']) {
+           sshagent(['EKS-Slave']) {
            sh "scp -o StrictHostKeyChecking=no secret${tag}.yml  test${tag}.yml ec2-user@13.214.43.201:/home/ubuntu/"
            script{
                 try{
